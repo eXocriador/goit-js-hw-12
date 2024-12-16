@@ -28,7 +28,15 @@
 }
 
 .search-form button {
-  padding: 10px 15px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  background-color: #4e75ff;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  color: #fff;
 }
 
 .gallery {
@@ -37,14 +45,14 @@
   gap: 24px;
 }
 
-.photo-card {
+.gallery-item {
   background-color: white;
   overflow: hidden;
   max-width: 360px;
   height: 200px;
 }
 
-.photo-card img {
+.gallery-item img {
   width: 100%;
   height: 152px;
   object-fit: cover;
@@ -83,4 +91,32 @@
   line-height: 200%;
   letter-spacing: 0.04em;
   color: #2e2f42;
+}
+
+.load-more {
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  background-color: #4e75ff;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0 auto;
+}
+
+.load-more.hidden {
+  display: none;
+}
+
+.end-message {
+  display: none;
+  text-align: center;
+  color: #f44336;
+  margin-top: 20px;
+}
+
+.end-message.hidden {
+  display: none;
 }

@@ -1,46 +1,72 @@
-// 47660157-57325717b13f34e4491083279
-// Описаний у документації
-import iziToast from "izitoast";
-// Додатковий імпорт стилів
-import "izitoast/dist/css/iziToast.min.css";
-// Описаний у документації
-import SimpleLightbox from "simplelightbox";
-// Додатковий імпорт стилів
-import "simplelightbox/dist/simple-lightbox.min.css";
-
 import { fetchImages } from './js/pixabay-api';
-import { renderImages } from './js/render-functions';
+import { renderGallery, showLoadMoreButton, hideLoadMoreButton, showEndMessage, clearGallery } from './js/render-functions';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const searchForm = document.querySelector('.search-form');
-const input = document.querySelector('input[name="searchQuery"]');
-const loader = document.querySelector('.loader');
-let page = 1;
-let currentQuery = '';
-
-searchForm.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const query = input.value.trim();
-  
-  if (!query) {
-    iziToast.error({ message: 'Please enter a search query!' });
-    return;
-  }
-
-  currentQuery = query;
-  page = 1;
-  loader.classList.add('is-active'); // Показати індикатор завантаження
-
-  fetchImages(query, page)
-    .then(function(images) {
-      renderImages(images);
-      new SimpleLightbox('.gallery a');
-    })
-    .catch(function(error) {
-      iziToast.error({ message: 'Sorry, no images found. Please try again!' });
-    })
-    .finally(function() {
-      loader.classList.remove('is-active'); // Приховати індикатор завантаження
-    });
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
 });
 
+// Після рендерингу нових зображень
+lightbox.refresh();
 
+
+let page = 1;
+let query = '';
+let totalHits = 0;
+
+const form = document.querySelector('.search-form');
+const loadMoreButton = document.querySelector('.load-more');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  query = event.target.elements.query.value.trim();
+
+  if (query === '') return;
+
+  page = 1;
+  clearGallery();
+  loadImages(query, page);
+});
+
+loadMoreButton.addEventListener('click', () => {
+  page += 1;
+  loadImages(query, page);
+});
+
+const loadImages = async (query, page) => {
+  try {
+    const data = await fetchImages(query, page);
+    const { hits, totalHits: total } = data;
+
+    if (hits.length === 0) {
+      showEndMessage();
+      hideLoadMoreButton();
+      return;
+    }
+
+    renderGallery(hits);
+    totalHits = total;
+
+    if (page * 15 >= totalHits) {
+      hideLoadMoreButton();
+    } else {
+      showLoadMoreButton();
+    }
+
+    smoothScroll();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const smoothScroll = () => {
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  const lastItem = galleryItems[galleryItems.length - 1];
+  const { height } = lastItem.getBoundingClientRect();
+  window.scrollBy({
+    top: height * 2,
+    behavior: 'smooth',
+  });
+};
