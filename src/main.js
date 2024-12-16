@@ -8,9 +8,7 @@ const lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
-// Після рендерингу нових зображень
 lightbox.refresh();
-
 
 let page = 1;
 let query = '';
