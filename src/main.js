@@ -1,14 +1,22 @@
 import { fetchImages } from './js/pixabay-api';
-import { renderGallery, showLoadMoreButton, hideLoadMoreButton, showEndMessage, clearGallery } from './js/render-functions';
+import {
+  renderGallery,
+  showLoadMoreButton,
+  hideLoadMoreButton,
+  showEndMessage,
+  clearGallery,
+  showLoader,
+  hideLoader,
+} from './js/render-functions';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
-
-lightbox.refresh();
 
 let page = 1;
 let query = '';
@@ -25,16 +33,19 @@ form.addEventListener('submit', async (event) => {
 
   page = 1;
   clearGallery();
-  loadImages(query, page);
+  await loadImages(query, page);
 });
 
-loadMoreButton.addEventListener('click', () => {
+loadMoreButton.addEventListener('click', async () => {
   page += 1;
-  loadImages(query, page);
+  await loadImages(query, page);
 });
 
 const loadImages = async (query, page) => {
   try {
+    showLoader(); 
+    hideLoadMoreButton();
+
     const data = await fetchImages(query, page);
     const { hits, totalHits: total } = data;
 
@@ -45,9 +56,10 @@ const loadImages = async (query, page) => {
     }
 
     renderGallery(hits);
+    lightbox.refresh();
     totalHits = total;
 
-    if (page * 15 >= totalHits) {
+    if (page * 3 >= totalHits) {
       hideLoadMoreButton();
     } else {
       showLoadMoreButton();
@@ -55,7 +67,13 @@ const loadImages = async (query, page) => {
 
     smoothScroll();
   } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Something went wrong! Please try again later.',
+    });
     console.error(error);
+  } finally {
+    hideLoader(); 
   }
 };
 

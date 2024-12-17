@@ -1,5 +1,11 @@
 export const renderGallery = (images) => {
   const gallery = document.querySelector('.gallery');
+  if (images.length === 0) {
+    showEndMessage();
+    hideLoadMoreButton();
+    return;
+  }
+
   const markup = images
     .map(image => {
       return `
@@ -49,4 +55,20 @@ export const showEndMessage = () => {
 export const clearGallery = () => {
   const gallery = document.querySelector('.gallery');
   gallery.innerHTML = '';
+};
+
+const loader = document.querySelector(".loader");
+
+export const showLoader = () => {
+  const loader = document.querySelector(".loader");
+  if (!loader.classList.contains('show')) {
+    loader.classList.add('show'); 
+  }
+};
+
+export const hideLoader = () => {
+  const loader = document.querySelector(".loader");
+  if (loader.classList.contains('show')) {
+    loader.classList.remove('show'); 
+  }
 };
