@@ -4,6 +4,7 @@ import {
   showLoadMoreButton,
   hideLoadMoreButton,
   showEndMessage,
+  clearEndMessage,
   clearGallery,
   showLoader,
   hideLoader,
@@ -33,8 +34,10 @@ form.addEventListener('submit', async (event) => {
 
   page = 1;
   clearGallery();
+  hideLoadMoreButton(); 
   await loadImages(query, page);
 });
+
 
 loadMoreButton.addEventListener('click', async () => {
   page += 1;
@@ -43,15 +46,17 @@ loadMoreButton.addEventListener('click', async () => {
 
 const loadImages = async (query, page) => {
   try {
-    showLoader(); 
+    showLoader();
     hideLoadMoreButton();
 
     const data = await fetchImages(query, page);
     const { hits, totalHits: total } = data;
 
-    if (hits.length === 0) {
-      showEndMessage();
-      hideLoadMoreButton();
+    clearEndMessage();
+
+    if (hits.length === 0 && page === 1) {
+      showEndMessage('No images found. Try adjusting your search criteria.');
+      
       return;
     }
 
@@ -59,13 +64,16 @@ const loadImages = async (query, page) => {
     lightbox.refresh();
     totalHits = total;
 
-    if (page * 3 >= totalHits) {
+    if (page * 15 >= totalHits) {
       hideLoadMoreButton();
+      showEndMessage("We're sorry, but you've reached the end of search results.");
     } else {
       showLoadMoreButton();
     }
 
-    smoothScroll();
+    if (page > 1) {
+      smoothScroll();
+    }
   } catch (error) {
     iziToast.error({
       title: 'Error',
@@ -73,9 +81,10 @@ const loadImages = async (query, page) => {
     });
     console.error(error);
   } finally {
-    hideLoader(); 
+    hideLoader();
   }
 };
+
 
 const smoothScroll = () => {
   const galleryItems = document.querySelectorAll('.gallery-item');

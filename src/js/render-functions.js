@@ -1,5 +1,8 @@
+const gallery = document.querySelector('.gallery');
+const loadMoreButton = document.querySelector('.load-more');
+const loader = document.querySelector('.loader');
+
 export const renderGallery = (images) => {
-  const gallery = document.querySelector('.gallery');
   if (images.length === 0) {
     showEndMessage();
     hideLoadMoreButton();
@@ -38,37 +41,39 @@ export const renderGallery = (images) => {
 };
 
 export const showLoadMoreButton = () => {
-  const loadMoreButton = document.querySelector('.load-more');
   loadMoreButton.style.display = 'block';
 };
 
 export const hideLoadMoreButton = () => {
-  const loadMoreButton = document.querySelector('.load-more');
   loadMoreButton.style.display = 'none';
 };
 
-export const showEndMessage = () => {
+export const showEndMessage = (message) => {
   const gallery = document.querySelector('.gallery');
-  gallery.insertAdjacentHTML('beforeend', `<p class="end-message">We're sorry, but you've reached the end of search results.</p>`);
+  clearEndMessage(); 
+  gallery.insertAdjacentHTML('afterend', `<p class="end-message">${message}</p>`);
 };
 
+export const clearEndMessage = () => {
+  const endMessage = document.querySelector('.end-message');
+  if (endMessage) {
+    endMessage.remove();
+  }
+};
+
+
 export const clearGallery = () => {
-  const gallery = document.querySelector('.gallery');
   gallery.innerHTML = '';
 };
 
-const loader = document.querySelector(".loader");
-
 export const showLoader = () => {
-  const loader = document.querySelector(".loader");
   if (!loader.classList.contains('show')) {
-    loader.classList.add('show'); 
+    loader.classList.add('show');
   }
 };
 
 export const hideLoader = () => {
-  const loader = document.querySelector(".loader");
   if (loader.classList.contains('show')) {
-    loader.classList.remove('show'); 
+    loader.classList.remove('show');
   }
 };
